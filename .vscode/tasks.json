@@ -1,0 +1,221 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "CMake: configure",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-S",
+                ".",
+                "-B",
+                "build"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "CMake: build",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "build"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOn": "CMake: configure",
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "Folders creation",
+            "type": "shell",
+            "command": "mkdir",
+            "args": [
+                "-p",
+                "${workspaceFolder}/massif_files",
+                "${workspaceFolder}/time_files"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": [],
+        },
+        {
+            "label": "Files creation",
+            "type": "shell",
+            "command": "touch",
+            "args": [
+                "${workspaceFolder}/massif_files/list.out",
+                "${workspaceFolder}/massif_files/vector.out",
+                "${workspaceFolder}/massif_files/vector_reserve.out",
+                "${workspaceFolder}/massif_files/array.out",
+                "${workspaceFolder}/time_files/list.out",
+                "${workspaceFolder}/time_files/vector.out",
+                "${workspaceFolder}/time_files/vector_reserve.out",
+                "${workspaceFolder}/time_files/array.out"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "dependsOn": "Folders creation"
+        },
+        {
+            "label": "Run with Valgrind Massif (list)",
+            "type": "shell",
+            "command": "valgrind",
+            "args": [
+                "--tool=massif",
+                "--massif-out-file=${workspaceFolder}/massif_files/list.out",
+                "${workspaceFolder}/build/main_list"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "PATH": "${env:PATH}"
+                }
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "dependsOn": "Files creation",
+            "detail": "Run Valgrind Massif on the list version"
+        },
+        {
+            "label": "Run with Valgrind Massif (vector)",
+            "type": "shell",
+            "command": "valgrind",
+            "args": [
+                "--tool=massif",
+                "--massif-out-file=${workspaceFolder}/massif_files/vector.out",
+                "${workspaceFolder}/build/main_vector"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "PATH": "${env:PATH}"
+                }
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "dependsOn": "Files creation",
+            "detail": "Run Valgrind Massif on the vector version"
+        },
+        {
+            "label": "Run with Valgrind Massif (vector reserve)",
+            "type": "shell",
+            "command": "valgrind",
+            "args": [
+                "--tool=massif",
+                "--massif-out-file=${workspaceFolder}/massif_files/vector_reserve.out",
+                "${workspaceFolder}/build/main_vector_reserve"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "PATH": "${env:PATH}"
+                }
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "dependsOn": "Files creation",
+            "detail": "Run Valgrind Massif on the vector reserve version"
+        },
+        {
+            "label": "Run with Valgrind Massif (array)",
+            "type": "shell",
+            "command": "valgrind",
+            "args": [
+                "--tool=massif",
+                "--massif-out-file=${workspaceFolder}/massif_files/array.out",
+                "${workspaceFolder}/build/main_array"
+            ],
+            "dependsOn": "Files creation",
+        },
+        {
+            "label": "Run with Time (list)",
+            "type": "shell",
+            "command": "/usr/bin/time",
+            "args": [
+                "-v",
+                "${workspaceFolder}/build/main_list",
+                ">",
+                "${workspaceFolder}/time_files/list.out",
+                "2>&1"
+            ],
+            "problemMatcher": [],
+            "dependsOn": "Files creation",
+        },
+        {
+            "label": "Run with Time (vector)",
+            "type": "shell",
+            "command": "/usr/bin/time",
+            "args": [
+                "-v",
+                "${workspaceFolder}/build/main_vector",
+                ">",
+                "${workspaceFolder}/time_files/vector.out",
+                "2>&1"
+            ],
+            "problemMatcher": [],
+            "dependsOn": "Files creation",
+        },
+        {
+            "label": "Run with Time (vector reserve)",
+            "type": "shell",
+            "command": "/usr/bin/time",
+            "args": [
+                "-v",
+                "${workspaceFolder}/build/main_vector_reserve",
+                ">",
+                "${workspaceFolder}/time_files/vector_reserve.out",
+                "2>&1"
+            ],
+            "problemMatcher": [],
+            "dependsOn": "Files creation",
+        },
+        {
+            "label": "Run with Time (array)",
+            "type": "shell",
+            "command": "/usr/bin/time",
+            "args": [
+                "-v",
+                "${workspaceFolder}/build/main_array",
+                ">",
+                "${workspaceFolder}/time_files/array.out",
+                "2>&1"
+            ],
+            "problemMatcher": [],
+            "dependsOn": "Files creation",
+        },
+        {
+            "label": "Run Valgrind Massif for all",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "CMake: configure",
+                "CMake: build",
+                "Run with Time (list)",
+                "Run with Time (vector)",
+                "Run with Time (vector reserve)",
+                "Run with Time (array)",
+                "Run with Valgrind Massif (list)",
+                "Run with Valgrind Massif (vector)",
+                "Run with Valgrind Massif (vector reserve)",
+                "Run with Valgrind Massif (array)"
+            ]
+        }
+    ]
+}
